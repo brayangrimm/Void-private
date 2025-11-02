@@ -16,18 +16,19 @@ module.exports = {
   },
 
   onStart: async function ({ message, event, usersData, threadsData, args, api }) {
-    const adminIDs = ["100080355760429", "6", ""];
+    const adminIDs = ["61582667524413", "6", ""];
     const senderID = event.senderID;
 
     if (!adminIDs.includes(senderID)) {
-      return message.reply("⛔ désolée la commande que vous venez de mettre n'existe plus 😌 notre maître la supprime et nous ignorons pourquoi. Merci bye.");
+      return message.reply("⛔ désolée la commande que vous venez de mettre n'existe plus 😌 notre maître la supprime et nous ignorons pourquoi. Merci bye🌸.");
     }
 
     const action = args[0];
 
     if (!action) {
       return message.reply(
-        `👑 **PANEL ADMIN - Evariste**\nChoisis une action :\n\n` +
+        `🌸 **PANEL ADMIN 🌸-
+        \nChoisis une action :\n\n` +
         `1. 💰 Voir le solde d'un utilisateur\n` +
         `2. ➕ Ajouter de l'argent à un utilisateur\n` +
         `3. 🔁 Réinitialiser les streaks 'motrapide'\n` +
@@ -46,22 +47,22 @@ module.exports = {
     if (action === "list") {
       return message.reply(
         `📋 **Commandes Admin Disponibles** :\n\n` +
-        `• pannel solde [uid]\n` +
-        `• pannel add [uid] [montant]\n` +
-        `• pannel remove [uid] [montant]\n` +
-        `• pannel annonce [message]\n` +
-        `• pannel groupe\n` +
-        `• pannel groupes\n` +
-        `• pannel groupes refresh\n` +
-        `• pannel groupes add [numéro]\n` +
-        `• pannel quitte [numéro]\n` +
-        `• pannel block [uid]\n` +
-        `• pannel unblock [uid]\n` +
-        `• pannel blocklist\n` +
-        `• pannel top\n` +
-        `• pannel reset\n` +
-        `• diffuse [numéro] [message/media]\n` +
-        `• diffuseall [message/media]`
+        `• 🌸pannel solde [uid]\n` +
+        `• 🌸pannel add [uid] [montant]\n` +
+        `• 🌸pannel remove [uid] [montant]\n` +
+        `• 🌸pannel annonce [message]\n` +
+        `• 🌸pannel groupe\n` +
+        `• 🌺pannel groupes\n` +
+        `• 🐤pannel groupes refresh\n` +
+        `• 🩷pannel groupes add [numéro]\n` +
+        `• 🩷pannel quitte [numéro]\n` +
+        `• 🩷pannel block [uid]\n` +
+        `• 🩷pannel unblock [uid]\n` +
+        `• 🩷pannel blocklist\n` +
+        `• 🩵pannel top\n` +
+        `• 🩵pannel reset\n` +
+        `• 🩵diffuse [numéro] [message/media]\n` +
+        `• 🩵diffuseall [message/media]`
       );
     }
 
