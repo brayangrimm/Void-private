@@ -1,101 +1,52 @@
-const fs = require("fs-extra");
-const { utils } = global;
-
 module.exports = {
-  config: {
-    name: "prefix",
-    version: "1.5",
-    author: "void Zaraki",
-    countDown: 5,
-    role: 0,
-    description: "Change the bot prefix in this chat or globally (admin only)",
-    category: "system",
-    guide: {
-      en:
-        "╭─『 ✨ PREFIX COMMAND ✨ 』\n" +
-        "│\n" +
-        "│ 🔹 {pn} <newPrefix>\n" +
-        "│     ➥ Set a new prefix for this chat only\n" +
-        "│     ➤ Example: {pn} $\n" +
-        "│\n" +
-        "│ 🔹 {pn} <newPrefix> -g\n" +
-        "│     ➥ Set a new global prefix (admin only)\n" +
-        "│     ➤ Example: {pn} ! -g\n" +
-        "│\n" +
-        "│ ♻️ {pn} reset\n" +
-        "│     ➥ Reset to default prefix from config\n" +
-        "│\n" +
-        "│ 📌 Just type: prefix\n" +
-        "│     ➥ Shows current prefix info\n" +
-        "╰─────────────────────────────"
+    config: {
+        name: "prefix",
+        version: "2.1",
+        author: "XxGhostxx & BrayanPrince",
+        countDown: 5,
+        role: 0,
+        shortDescription: "Affiche le préfixe du bot",
+        longDescription: "Répond avec un ton mignon et taquin pour montrer le préfixe du bot",
+        category: "reply"
+    },
+
+    onStart: async function () {},
+
+    onChat: async function ({ event, message, getLang, threadsData }) {
+        if (event.body && event.body.toLowerCase() === "prefix") {
+            // 💫 Récupération du préfixe du salon
+            const { getPrefix } = global.utils;
+            const prefix = getPrefix(event.threadID);
+
+            // 🌸 Liste d'emojis mignons et féminins
+            const emojis = [
+                "💖", "💞", "✨", "🌸", "💫", "🩷", "💐", "🎀", "💕", "😚",
+                "😊", "🥰", "😇", "🤭", "🙈", "💋", "🦋", "💎", "🌷", "😝",
+                "🤍", "🌼", "🌹", "🍓", "🍒", "🩰", "🌺", "💗"
+            ];
+
+            // 💕 Réponses mignonnes avec le vrai préfixe inclus
+            const responses = [
+                ".  /)    /)───────♡\n  (｡•ᴗ•｡)❥ 𝒯𝒶𝒾𝓁𝓈 𝒷𝑜𝓉 🩷\n╭∪─∪───────♡\n╰[%] Hihi~ tu veux connaître mon préfixe ? C’est 「%」 💋",
+                ".  /)    /)───────♡\n  (｡>ω<｡) ❥𝒯𝒶𝒾𝓁𝓈𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Ouh~ tu es curieux⋆°｡♡ Oui c’est bien 「%」 ! 🌸",
+                ".  /)    /)───────♡\n  (˶˃ᴗ˂˶) ❥𝒯𝒶𝒾𝓁𝓈𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Hihi~ le secret c’est 「%」 💞 garde-le pour toi hein 🫣",
+                ".  /)    /)───────♡\n  (｡•ㅅ•｡) ❥𝒯𝒶𝒾𝓁𝓈 𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] T’as deviné ? Ouiii 💫 c’est 「%」 !",
+                ".  /)    /)───────♡\n  (⁄ ⁄>⁄ ▽ ⁄<⁄ ⁄) ❥𝒯𝒶𝒾𝓁𝓈𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Huhu~ j’te le dis juste à toi... c’est 「%」 🥺💗",
+                ".  /)    /)───────♡\n  (•ᴗ•❁) ❥𝒯𝒶𝒾𝓁𝓈 𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Tu veux mon secret ? Okay 🩷 c’est 「%」 💖",
+                ".  /)    /)───────♡\n  (｡•ᴗ-)ﾉﾞ❥𝒯𝒶𝒾𝓁𝓈𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Oups~ j’allais oublier de te le dire 🥰 c’est 「%」 ✨",
+                ".  /)    /)───────♡\n  (✿>‿<) ❥𝒯𝒶𝒾𝓁𝓈𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Et voilàà 💕 「%」 c’est mon petit préfixe d’amour 💞",
+                ".  /)    /)───────♡\n  (´｡• ω •｡`) ❥𝒯𝒶𝒾𝓁𝓈𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Hihi~ t’es trop mignon·ne 😚 mon préfixe c’est 「%」 💐",
+                ".  /)    /)───────♡\n  (｡♥‿♥｡) ❥𝒯𝒶𝒾𝓁𝓈𝒷𝑜𝓉\n╭∪─∪───────♡\n╰[%] Allez~ juste pour toi 💕 c’est 「%」 🌷"
+            ];
+
+            // 🌷 Choix aléatoire d’un emoji et d’une phrase
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)]
+                .replace(/\[%\]/g, randomEmoji)
+                .replace(/%/g, prefix);
+
+            // 💌 Envoi du message mignon avec le vrai préfixe
+            return message.reply(randomResponse);
+        }
     }
-  },
-
-  langs: {
-    en: {
-      reset: "✅ Reset to default prefix: %1",
-      onlyAdmin: "⛔ Only bot admins can change global prefix!",
-      confirmGlobal: "⚙️ React to confirm global prefix update.",
-      confirmThisThread: "⚙️ React to confirm this chat's prefix update.",
-      successGlobal: "✅ Global prefix updated: %1",
-      successThisThread: "✅ Chat prefix updated: %1"
-    }
-  },
-
-  onStart: async function ({ message, role, args, commandName, event, threadsData, getLang }) {
-    if (!args[0]) return message.SyntaxError();
-
-    if (args[0] === "reset") {
-      await threadsData.set(event.threadID, null, "data.prefix");
-      return message.reply(getLang("reset", global.GoatBot.config.prefix));
-    }
-
-    const newPrefix = args[0];
-    const formSet = {
-      commandName,
-      author: event.senderID,
-      newPrefix,
-      setGlobal: args[1] === "-g"
-    };
-
-    if (formSet.setGlobal && role < 2) {
-      return message.reply(getLang("onlyAdmin"));
-    }
-
-    const confirmMessage = formSet.setGlobal ? getLang("confirmGlobal") : getLang("confirmThisThread");
-    return message.reply(confirmMessage, (err, info) => {
-      formSet.messageID = info.messageID;
-      global.GoatBot.onReaction.set(info.messageID, formSet);
-    });
-  },
-
-  onReaction: async function ({ message, threadsData, event, Reaction, getLang }) {
-    const { author, newPrefix, setGlobal } = Reaction;
-    if (event.userID !== author) return;
-
-    if (setGlobal) {
-      global.GoatBot.config.prefix = newPrefix;
-      fs.writeFileSync(global.client.dirConfig, JSON.stringify(global.GoatBot.config, null, 2));
-      return message.reply(getLang("successGlobal", newPrefix));
-    }
-
-    await threadsData.set(event.threadID, newPrefix, "data.prefix");
-    return message.reply(getLang("successThisThread", newPrefix));
-  },
-
-  onChat: async function ({ event, message, threadsData, usersData }) {
-    const globalPrefix = global.GoatBot.config.prefix;
-    const threadPrefix = await threadsData.get(event.threadID, "data.prefix") || globalPrefix;
-
-    if (event.body && event.body.toLowerCase() === "prefix") {
-      const userName = await usersData.getName(event.senderID);
-
-      return message.reply(
-        `👋 𝗬𝗼 ${userName}, 𝘁𝘂 𝗮𝘀 𝗱𝗲𝗺𝗮𝗻𝗱𝗲 𝗺𝗼𝗻 𝗽𝗿𝗲́𝗳𝗶𝘅𝗲!?\n` +
-        `➥ 🌐 𝗣𝗥𝗘𝗙𝗜𝗫: ${globalPrefix}\n` +
-        `➥ 💬 𝗰𝗲 𝗴𝗿𝗼𝘂𝗽𝗲: ${threadPrefix}\n` +
-        `𝗷𝗲 𝘀𝘂𝗶𝘀 , 𝐕𝐎𝐋𝐃𝐈𝐆𝐎_𝐙𝐀𝐑𝐀𝐊𝐈 𝗰𝗼𝗺𝗺𝗲𝗻𝘁 𝘁𝘂 𝘃𝗮𝘀?! `
-      );
-    }
-  }
 };
