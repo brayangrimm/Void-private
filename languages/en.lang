@@ -93,7 +93,7 @@ handlerEvents.userBanned=You have been banned from using the bot\nÂ» Reason: %
 handlerEvents.threadBanned=This group has been banned from using the bot\nÂ» Reason: %1\nÂ» Time: %2\nÂ» Thread ID: %3
 handlerEvents.onlyAdminBox=This group is currently enabled only group administrators can use the bot
 handlerEvents.onlyAdminBot=❌ | Currently only bot's admin can use bot
-handlerEvents.commandNotFound=[%1]  𝗠𝗔𝗜𝗦 𝗟𝗔 �oesn't 𝗘𝗫𝗜𝗦𝗧⚫\n〉 [%2help📑] to see all 𝗖𝗠𝗗𝘴\n--------------------------------------\n🟢 𝐕𝐎𝐈𝐃 ⚪
+handlerEvents.commandNotFound=[%1]  𝗗𝗘́𝗦𝗢𝗟𝗘́ 𝗠𝗔𝗜𝗦 𝗝𝗘 𝗧𝗥𝗢𝗨𝗩𝗘 𝗣𝗔𝗦 ⚫\n〉 [%2help📑] 𝗽𝗼𝘂𝗿 𝘃𝗼𝗶𝗿 𝗺𝗲𝘀 𝗖𝗠𝗗𝘴\n--------------------------------------\n🟢 𝗥𝗔𝗤𝗨𝗘𝗟 ⚪
 handlerEvents.commandNotFound2=🟢𝗕𝗢𝗧 𝗦𝗢𝗨𝗥𝗖𝗘⚪\n--------------------------------------\n〉𝗖𝗥𝗘𝗔𝗧𝗢𝗥:ʚʆɞ Gūɱbāllʚʆɞ\n〉𝗟𝗜𝗡𝗞-𝗙ace𝗕ook:https://www.facebook.com/profile.php?id=61582667524413 🪽🩷: github.com/voldy-coder/Projet-Zaraki-anos\n--------------------------------------\n🟢 𝗚𝗨𝗠𝗕𝗔𝗟𝗟 ⚪ 𝗣𝗙:「^」
 handlerEvents.commandSyntaxError=￢_￢ | ❌ 𝗕𝗔𝗞𝗔\n--------------------------------------\n〉♡:[%1help %2]\n➤𝚑𝚘𝚠 𝚝𝚘 𝚞𝚜𝚎 𝚝𝚑𝚒𝚜 𝗖𝗠𝗗
 handlerEvents.onlyAdmin=❌ | Only group administrators can use the command "%1"
