@@ -1,222 +1,102 @@
-const fs = require("fs-extra");
-const axios = require("axios");
-const path = require("path");
-const { getPrefix } = global.utils;
-const { commands, aliases } = global.GoatBot;
-const doNotDelete = "[ 🐐 | Goat Bot V2 ]";
-/**
-* @author NTKhang
-* @modified BrayanPrince (v2 - Emoji Help UI)
-*/
+const fs = require("fs");
 
 module.exports = {
-	config: {
-		name: "help",
-		version: "1.40",
-		author: "NTKhang (modifié par BrayanPrince)",
-		countDown: 5,
-		role: 0,
-		description: {
-			vi: "Xem cách sử dụng của các lệnh",
-			en: "View command usage"
-		},
-		category: "info",
-		guide: {
-			vi: "   {pn} [để trống | <số trang> | <tên lệnh>]",
-			en: "   {pn} [empty | <page number> | <command name>]"
-		},
-		priority: 1
-	},
+  config: {
+    name: "help",
+    aliases: ["menu", "cmds"],
+    version: "6.0",
+    author: "Voldigo Anos",
+    countDown: 5,
+    role: 0,
+    shortDescription: "Menu d’aide adorable et coloré 💖",
+    longDescription: "Affiche le menu d’aide avec un style doux, féminin et décoré 🌸",
+    category: "system",
+    guide: {
+      en: "{pn} [page | nomCommande]"
+    }
+  },
 
-	langs: {
-		vi: {
-			commandNotFound: "Lệnh \"%1\" không tồn tại",
-			pageNotFound: "Trang %1 không tồn tại",
-			doNotHave: "Không có",
-			roleText0: "0 (Tất cả người dùng)",
-			roleText1: "1 (Quản trị viên nhóm)",
-			roleText2: "2 (Admin bot)",
-			roleText0setRole: "0 (set role, tất cả người dùng)",
-			roleText1setRole: "1 (set role, quản trị viên nhóm)"
-		},
-		en: {
-			commandNotFound: "Command \"%1\" does not exist",
-			pageNotFound: "Page %1 does not exist",
-			doNotHave: "Do not have",
-			roleText0: "0 (All users)",
-			roleText1: "1 (Group administrators)",
-			roleText2: "2 (Admin bot)",
-			roleText0setRole: "0 (set role, all users)",
-			roleText1setRole: "1 (set role, group administrators)"
-		}
-	},
+  onStart: async function ({ api, event, args, prefix, threadsData }) {
+    const commands = global.GoatBot?.commands || new Map();
 
-	onStart: async function ({ message, args, event, threadsData, getLang, role, globalData }) {
-		const langCode = await threadsData.get(event.threadID, "data.lang") || global.GoatBot.config.language;
-		let customLang = {};
-		const pathCustomLang = path.normalize(`${process.cwd()}/languages/cmds/${langCode}.js`);
-		if (fs.existsSync(pathCustomLang))
-			customLang = require(pathCustomLang);
+    // Préfixe dynamique 🌈
+    const threadData = await threadsData.get(event.threadID);
+    const threadPrefix = threadData?.data?.prefix || prefix || global.GoatBot.config.prefix || "^";
 
-		const { threadID } = event;
-		const threadData = await threadsData.get(threadID);
-		const prefix = getPrefix(threadID);
+    // 💖 help <commande>
+    if (args[0] && isNaN(args[0])) {
+      const name = args[0].toLowerCase();
+      const cmd =
+        commands.get(name) ||
+        Array.from(commands.values()).find(c => c.config.aliases?.includes(name));
 
-		const commandName = (args[0] || "").toLowerCase();
-		let command = commands.get(commandName) || commands.get(aliases.get(commandName));
-		const aliasesData = threadData.data.aliases || {};
+      if (!cmd)
+        return api.sendMessage(`❌ Oups ! La commande "${name}" n’existe pas 💔`, event.threadID, event.messageID);
 
-		if (!command) {
-			for (const cmdName in aliasesData) {
-				if (aliasesData[cmdName].includes(commandName)) {
-					command = commands.get(cmdName);
-					break;
-				}
-			}
-		}
+      const { config } = cmd;
+      const aliases = config.aliases?.length ? config.aliases.join(", ") : "Aucun 💭";
+      const role =
+        config.role == 2 ? "👑 Admin" : config.role == 1 ? "⚙️ Modératrice" : "🌷 Utilisatrice";
+      const cooldown = config.countDown ? `${config.countDown} sec` : "Aucun ⏳";
+      const category = config.category || "Autre 🌸";
 
-		if (!command) {
-			const globalAliasesData = await globalData.get('setalias', 'data', []);
-			for (const item of globalAliasesData) {
-				if (item.aliases.includes(commandName)) {
-					command = commands.get(item.commandName);
-					break;
-				}
-			}
-		}
+      const msg =
+`╔═══════♡ 💕 𝐈𝐍𝐅𝐎 𝐂𝐎𝐌𝐌𝐀𝐍𝐃𝐄 💕 ♡═══════╗
+║ 🌸 Nom : ${config.name}
+║ 💐 Catégorie : ${category}
+║ 💖 Description :
+║   ${config.longDescription || config.shortDescription || "Aucune description disponible 🌺"}
+║ 🎀 Alias : ${aliases}
+║ ⏰ Cooldown : ${cooldown}
+║ 👑 Rôle : ${role}
+║
+║ 🌈 Utilisation :
+║   ${threadPrefix}${config.guide?.en || config.name}
+╚════════════════════════════════════╝`;
 
-		// ———————————————— LIST ALL COMMANDS ——————————————— //
-		if (!command && (!args[0] || !isNaN(args[0]))) {
-			let msg = "";
-			const page = parseInt(args[0]) || 1;
-			const numberOfOnePage = 25;
+      return api.sendMessage(msg, event.threadID, event.messageID);
+    }
 
-			// 🧩 Liste d’emojis pour les catégories
-			const categoryIcons = {
-				"INFO": "💬",
-				"FUN": "🎮",
-				"MEDIA": "🖼️",
-				"ADMIN": "🛠️",
-				"OWNER": "👑",
-				"GROUP": "👥",
-				"ECONOMY": "💰",
-				"UTILITY": "⚙️",
-				"ANIME": "🍥",
-				"MUSIC": "🎵",
-				"GAME": "🎯",
-				"RANDOM": "🍂",
-				"NO CATEGORY": "📦"
-			};
+    // 💕 Menu principal
+    const page = parseInt(args[0]) || 1;
 
-			const categorized = {};
-			for (const [name, value] of commands) {
-				if (value.config.role > 1 && role < value.config.role) continue;
+    // Trier les commandes par catégorie
+    const categorized = {};
+    for (const [name, cmd] of commands.entries()) {
+      const cat = cmd.config?.category || "Autre 🌷";
+      if (!categorized[cat]) categorized[cat] = [];
+      categorized[cat].push(cmd.config.name);
+    }
 
-				const category = (value.config.category || "No Category").toUpperCase();
-				const description = checkLangObject(value.config.description, langCode) || "";
-				const shortDesc = cropContent(description.charAt(0).toUpperCase() + description.slice(1), 50);
-				const line = `│ ${name.padEnd(15)} → ${shortDesc}`;
+    const allCategories = Object.entries(categorized);
+    const totalPages = Math.ceil(allCategories.length / 3);
+    if (page < 1 || page > totalPages)
+      return api.sendMessage(`❌ Page invalide 🌸 Il y a ${totalPages} pages !`, event.threadID, event.messageID);
 
-				if (!categorized[category]) categorized[category] = [];
-				categorized[category].push(line);
-			}
+    const startIndex = (page - 1) * 3;
+    const endIndex = startIndex + 3;
+    const pageCategories = allCategories.slice(startIndex, endIndex);
 
-			const allCategories = Object.keys(categorized).sort();
-			allCategories.forEach((cat, idx) => {
-				const icon = categoryIcons[cat] || "📁";
-				msg += `${idx == 0 ? "╭" : "├"}───「 ${icon} ${cat} 」───⭓\n`;
-				categorized[cat].sort();
-				msg += categorized[cat].join("\n") + "\n";
-			});
+    // 🌺 Message kawaii
+    let msg = "";
+    msg += "╔════════════════════════════════════╗\n";
+    msg += "║      🌷💞 𝐌𝐄𝐍𝐔 𝐃’𝐀𝐈𝐃𝐄 𝐑𝐎𝐒𝐄 💞🌷       ║\n";
+    msg += "╠════════════════════════════════════╣\n";
 
-			// Pagination
-			const lines = msg.trim().split("\n");
-			const totalPage = Math.ceil(lines.length / numberOfOnePage);
-			if (page < 1 || page > totalPage)
-				return message.reply(getLang("pageNotFound", page));
+    pageCategories.forEach(([cat, cmds]) => {
+      msg += `║ 💌 ${cat.toUpperCase()}\n`;
+      msg += "║ ────────────────────────────────\n";
+      cmds.sort().forEach(cmd => {
+        msg += `║ 💖 ${cmd}\n`;
+      });
+      msg += "║ ────────────────────────────────\n";
+    });
 
-			const pageContent = lines.slice((page - 1) * numberOfOnePage, page * numberOfOnePage).join("\n");
-			const footer = `\n├─────⭔\n│ Page [ ${page}/${totalPage} ]\n│ ${commands.size} commandes disponibles\n│ Utilise: ${prefix}help <page>\n╰─────────────⭓`;
+    msg += `║ 📄 Page : ${page} / ${totalPages}\n`;
+    msg += `║ 💫 Commandes : ${commands.size}\n`;
+    msg += `║ 💋 Utilise : ${threadPrefix}help <commande>\n`;
+    msg += "╚════════════════════════════════════╝";
 
-			return message.reply(`╭─────────────⭓\n${pageContent}${footer}`);
-		}
-
-		// ———————————— COMMAND DOES NOT EXIST ———————————— //
-		else if (!command && args[0]) {
-			return message.reply(getLang("commandNotFound", args[0]));
-		}
-
-		// ————————————————— INFO COMMAND ————————————————— //
-		else {
-			const configCommand = command.config;
-			let guide = configCommand.guide?.[langCode] || configCommand.guide?.["en"];
-			if (guide == undefined)
-				guide = customLang[configCommand.name]?.guide?.[langCode] || customLang[configCommand.name]?.guide?.["en"];
-
-			guide = guide || { body: "" };
-			if (typeof guide == "string")
-				guide = { body: guide };
-
-			const guideBody = guide.body
-				.replace(/\{prefix\}|\{p\}/g, prefix)
-				.replace(/\{name\}|\{n\}/g, configCommand.name)
-				.replace(/\{pn\}/g, prefix + configCommand.name);
-
-			const aliasesString = configCommand.aliases ? configCommand.aliases.join(", ") : getLang("doNotHave");
-			const aliasesThisGroup = threadData.data.aliases ? (threadData.data.aliases[configCommand.name] || []).join(", ") : getLang("doNotHave");
-
-			let roleOfCommand = configCommand.role;
-			let roleIsSet = false;
-			if (threadData.data.setRole?.[configCommand.name]) {
-				roleOfCommand = threadData.data.setRole[configCommand.name];
-				roleIsSet = true;
-			}
-
-			const roleText = roleOfCommand == 0 ?
-				(roleIsSet ? getLang("roleText0setRole") : getLang("roleText0")) :
-				roleOfCommand == 1 ?
-					(roleIsSet ? getLang("roleText1setRole") : getLang("roleText1")) :
-					getLang("roleText2");
-
-			const author = configCommand.author;
-			const descriptionCustomLang = customLang[configCommand.name]?.description;
-			let description = checkLangObject(configCommand.description, langCode);
-			if (description == undefined)
-				if (descriptionCustomLang != undefined)
-					description = checkLangObject(descriptionCustomLang, langCode);
-				else
-					description = getLang("doNotHave");
-
-			const guideMsg =
-				`╭───「 ${configCommand.name.toUpperCase()} 」───⭓\n` +
-				`│🌸 Description: ${description}\n` +
-				`│🌸 Aliases: ${aliasesString}\n` +
-				`│🌸 Group Aliases: ${aliasesThisGroup}\n` +
-				`│🌸 Version: ${configCommand.version}\n` +
-				`│🌸 Role: ${roleText}\n` +
-				`│🌸 Cooldown: ${configCommand.countDown || 1}s\n` +
-				`│🌸 Author: ${author}\n` +
-				`├───「 USAGE 」───⭔\n` +
-				`│ ${guideBody.split("\n").join("\n│ ")}\n` +
-				`╰─────────────⭓`;
-
-			return message.reply(guideMsg);
-		}
-	}
+    api.sendMessage(msg, event.threadID, event.messageID);
+  }
 };
-
-function checkLangObject(data, langCode) {
-	if (typeof data == "string")
-		return data;
-	if (typeof data == "object" && !Array.isArray(data))
-		return data[langCode] || data.en || undefined;
-	return undefined;
-}
-
-function cropContent(content, max) {
-	if (content.length > max) {
-		content = content.slice(0, max - 3);
-		content = content + "...";
-	}
-	return content;
-}
