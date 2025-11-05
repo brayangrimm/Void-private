@@ -56,7 +56,7 @@ module.exports = {
 		if (config.adminBot.length == 0)
 			return message.reply(getLang("noAdmin"));
 		const senderName = await usersData.getName(senderID);
-		const msg = "📬___𝙲𝚑𝚎𝚏 𝚟𝚘𝚞𝚜 𝚊𝚟𝚎𝚣 𝚞𝚗 𝚗𝚘𝚞𝚟𝚎𝚊𝚞 𝚖𝚎𝚜𝚜𝚊𝚐𝚎 𝚍𝚊𝚗𝚜 𝚟𝚘𝚝𝚛𝚎 𝚌𝚘𝚞𝚛𝚒𝚎𝚕___ 📬"
+		const msg = "🌸___𝙲𝚑𝚎𝚏 𝚟𝚘𝚞𝚜 𝚊𝚟𝚎𝚣 𝚞𝚗 𝚗𝚘𝚞𝚟𝚎𝚊𝚞 𝚖𝚎𝚜𝚜𝚊𝚐𝚎 𝚍𝚊𝚗𝚜 𝚟𝚘𝚝𝚛𝚎 𝚌𝚘𝚞𝚛𝚒𝚎𝚕___ 🌸"
 			+ `\n- ➪𝐍𝐨𝐦 𝐝'𝐮𝐭𝐢𝐥𝐢𝐬𝐚𝐭𝐞𝐮𝐫: ${senderName}`
 			+ `\n- ➪𝐔𝐢𝐝 𝐝'𝐮𝐭𝐢𝐥𝐢𝐬𝐚𝐭𝐞𝐮𝐫: ${senderID}`
 			+ (isGroup ? getLang("sendByGroup", (await threadsData.get(threadID)).threadName, threadID) : getLang("sendByUser"));
