@@ -1,4 +1,4 @@
-^cmd install prefix.js module.exports = {
+module.exports = {
     config: {
         name: "prefix",
         version: "3.0",
