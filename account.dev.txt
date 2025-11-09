@@ -76,7 +76,7 @@
     },
     {
         "name": "fbl_st",
-        "value": "101026172%3BT%3A29378117",
+        "value": "101026172%3BT%3A29378139",
         "domain": ".facebook.com",
         "hostOnly": false,
         "path": "/",
@@ -86,7 +86,7 @@
         "session": false,
         "firstPartyDomain": "",
         "partitionKey": null,
-        "expirationDate": 1794223026,
+        "expirationDate": 1794224380,
         "storeId": null
     },
     {
